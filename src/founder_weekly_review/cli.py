@@ -20,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--out", type=Path, default=Path("outputs/demo"), help="Output directory."
     )
     parser.add_argument(
-        "--config", type=Path, help="JSON or YAML file with risk thresholds"
+        "--config", type=Path, help="JSON  file with risk thresholds"
     )
     return parser
 
@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     metrics = load_metrics(args.metrics)
     # Default thresholds — used if user does not provide --config
     thresholds = DEFAULT_THRESHOLDS.copy()
-    # If user passes JSON/YAML config, override defaults
+    # If user passes JSON config, override defaults
     if args.config:
         if not args.config.exists():
             raise FileNotFoundError(f"Config file not found: {args.config}")
