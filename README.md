@@ -49,11 +49,11 @@ Then open:
 
 ## Custom Risk Thresholds
 
-You can override the default risk thresholds by passing a JSON (or YAML) config file via the `--config` argument.
+You can override the default risk thresholds by passing a JSON config file via the `--config` argument.
 
 Example JSON (`examples/thresholds.json`):
 
-````json
+```json
 {
   "runway_months": 10,
   "churn_rate": 0.05,
@@ -61,6 +61,7 @@ Example JSON (`examples/thresholds.json`):
   "support_growth": 0.05,
   "nps": 25
 }
+```
 
 ## Demo Output Preview
 
@@ -81,7 +82,7 @@ founder-weekly-operating-review-agent/
 ├── tests/
 │   └── test_analysis.py
 └── README.md
-````
+```
 
 ## Metrics Expected
 

@@ -7,7 +7,6 @@ from .analysis import money, percent
 
 
 def write_outputs(analysis: dict, out_dir: Path) -> None:
-    print(f"DEBUG: Creating output folder {out_dir}")
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "weekly_operating_review.md").write_text(
         render_weekly_review(analysis), encoding="utf-8"

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .analysis import analyze
+from .analysis import analyze, DEFAULT_THRESHOLDS
 from .metrics import load_metrics
 from .reporting import write_outputs
 
@@ -30,13 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     context = args.context.read_text(encoding="utf-8") if args.context else ""
     metrics = load_metrics(args.metrics)
     # Default thresholds — used if user does not provide --config
-    thresholds = {
-        "runway_months": 6,
-        "churn_rate": 0.06,
-        "activation_drop": 0.03,
-        "support_growth": 0.15,
-        "nps": 30,
-    }
+    thresholds = DEFAULT_THRESHOLDS.copy()
     # If user passes JSON/YAML config, override defaults
     if args.config:
         if not args.config.exists():
@@ -47,7 +41,6 @@ def main(argv: list[str] | None = None) -> int:
         with args.config.open("r", encoding="utf-8") as f:
             user_thresholds = json.load(f)
             thresholds.update(user_thresholds)
-    print(f"DEBUG: thresholds loaded from JSON: {thresholds}", flush=True)
 
     result = analyze(metrics, context=context, thresholds=thresholds)
     write_outputs(result, args.out)
