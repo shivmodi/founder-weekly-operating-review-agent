@@ -9,8 +9,10 @@ DEFAULT_THRESHOLDS = {
     "churn_rate": 0.06,
     "activation_drop": 0.03,
     "support_growth": 0.15,
-    "nps": 30
+    "nps": 30,
 }
+
+
 def pct_change(current: float, previous: float) -> float:
     if previous == 0:
         return 0.0
@@ -29,7 +31,7 @@ def percent(value: float) -> str:
     return f"{value:.1%}"
 
 
-def analyze(metrics: list[WeeklyMetrics], context: str = "" , thresholds=None) -> dict:
+def analyze(metrics: list[WeeklyMetrics], context: str = "", thresholds=None) -> dict:
 
     if len(metrics) < 2:
         raise ValueError("At least two weeks of metrics are required.")
@@ -42,7 +44,9 @@ def analyze(metrics: list[WeeklyMetrics], context: str = "" , thresholds=None) -
     net_new_growth = pct_change(latest.net_new_mrr, previous.net_new_mrr)
     activation_delta = pp_change(latest.activation_rate, previous.activation_rate)
     pipeline_growth = pct_change(latest.pipeline_value, previous.pipeline_value)
-    support_growth = pct_change(latest.support_tickets_open, previous.support_tickets_open)
+    support_growth = pct_change(
+        latest.support_tickets_open, previous.support_tickets_open
+    )
     product_issue_change = latest.product_issues_open - previous.product_issues_open
     churn_rate = latest.churn_mrr / max(previous.mrr, 1)
     burn_multiple = latest.burn / max(latest.net_new_mrr, 1)
@@ -77,7 +81,9 @@ def analyze(metrics: list[WeeklyMetrics], context: str = "" , thresholds=None) -
     }
 
 
-def build_headline(latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict], thresholds) -> str:
+def build_headline(
+    latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict], thresholds
+) -> str:
     if latest.runway_months < thresholds["runway_months"]:
         return (
             f"{latest.week}: growth is continuing, but runway is now the operating constraint. "
@@ -91,7 +97,9 @@ def build_headline(latest: WeeklyMetrics, deltas: dict[str, float], risks: list[
     return f"{latest.week}: metrics are directionally healthy and execution should stay focused."
 
 
-def build_risks(latest: WeeklyMetrics, previous: WeeklyMetrics, deltas: dict[str, float], thresholds) -> list[dict]:
+def build_risks(
+    latest: WeeklyMetrics, previous: WeeklyMetrics, deltas: dict[str, float], thresholds
+) -> list[dict]:
     # Use thresholds passed from CLI or defaults
     # Each risk comparison uses thresholds to determine if it should be triggered
     risks: list[dict] = []
@@ -113,7 +121,7 @@ def build_risks(latest: WeeklyMetrics, previous: WeeklyMetrics, deltas: dict[str
                 "why_it_matters": "Growth quality is weaker if new revenue is offset by preventable churn.",
             }
         )
-    if deltas["activation_delta"] < (-1)*thresholds["activation_drop"]:
+    if deltas["activation_delta"] < (-1) * thresholds["activation_drop"]:
         risks.append(
             {
                 "severity": "medium",
@@ -143,25 +151,39 @@ def build_risks(latest: WeeklyMetrics, previous: WeeklyMetrics, deltas: dict[str
     return risks
 
 
-def build_priorities(latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]) -> list[str]:
+def build_priorities(
+    latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]
+) -> list[str]:
     priorities: list[str] = []
     risk_areas = {risk["area"] for risk in risks}
 
     if "cash" in risk_areas:
-        priorities.append("Cut or delay non-critical spend and define the next fundraising-readiness milestone.")
+        priorities.append(
+            "Cut or delay non-critical spend and define the next fundraising-readiness milestone."
+        )
     if "retention" in risk_areas:
-        priorities.append("Run a churn review on the latest lost accounts and create a save playbook for at-risk customers.")
+        priorities.append(
+            "Run a churn review on the latest lost accounts and create a save playbook for at-risk customers."
+        )
     if "activation" in risk_areas or latest.product_issues_open > 30:
-        priorities.append("Make activation recovery the product focus: fix onboarding blockers and reduce open product issues.")
+        priorities.append(
+            "Make activation recovery the product focus: fix onboarding blockers and reduce open product issues."
+        )
     if deltas["pipeline_growth"] > 0.1:
-        priorities.append("Convert pipeline quality into booked meetings and identify which segment is producing qualified demand.")
+        priorities.append(
+            "Convert pipeline quality into booked meetings and identify which segment is producing qualified demand."
+        )
     if not priorities:
-        priorities.append("Keep the weekly operating focus on compounding the current growth motion.")
+        priorities.append(
+            "Keep the weekly operating focus on compounding the current growth motion."
+        )
 
     return priorities[:4]
 
 
-def build_team_asks(latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]) -> list[dict]:
+def build_team_asks(
+    latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]
+) -> list[dict]:
     asks = [
         {
             "team": "GTM",
@@ -186,8 +208,14 @@ def build_team_asks(latest: WeeklyMetrics, deltas: dict[str, float], risks: list
     return asks
 
 
-def build_investor_summary(latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]) -> str:
-    risk_text = "Runway and operating load remain the main areas under active management." if risks else "No major operating risk changed materially this week."
+def build_investor_summary(
+    latest: WeeklyMetrics, deltas: dict[str, float], risks: list[dict]
+) -> str:
+    risk_text = (
+        "Runway and operating load remain the main areas under active management."
+        if risks
+        else "No major operating risk changed materially this week."
+    )
     return (
         f"MRR reached {money(latest.mrr)}, up {percent(deltas['mrr_growth'])} week over week. "
         f"Pipeline grew {percent(deltas['pipeline_growth'])} to {money(latest.pipeline_value)}. "

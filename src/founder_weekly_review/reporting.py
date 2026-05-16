@@ -29,7 +29,7 @@ def render_weekly_review(analysis: dict) -> str:
     lines = [
         f"# Weekly Operating Review: {latest['week']}",
         "",
-        f"## Headline",
+        "## Headline",
         "",
         analysis["headline"],
         "",

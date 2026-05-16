@@ -19,9 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--out", type=Path, default=Path("outputs/demo"), help="Output directory."
     )
-    parser.add_argument(
-        "--config", type=Path, help="JSON  file with risk thresholds"
-    )
+    parser.add_argument("--config", type=Path, help="JSON file with risk thresholds")
     return parser
 
 
@@ -48,7 +46,6 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-# Temporary direct-run support for debugging
-# Normally we run CLI via `python -m src.founder_weekly_review.cli`
+# Temporary
 if __name__ == "__main__":
     main()
