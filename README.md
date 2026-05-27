@@ -4,6 +4,32 @@ Generate a founder-ready weekly operating review from startup metrics and compan
 
 <!-- FOUNDER_OS_STANDARD_README -->
 
+## Start here
+
+| Reader | Open first | Why | CTA |
+| --- | --- | --- | --- |
+| Founder | `docs/sample_weekly_operating_review.md` | Inspect the committed weekly review before running anything. | Use the structure for the next operating review. |
+| Non-technical operator | `examples/weekly_metrics.csv` | See the input shape for a weekly review. | Copy the columns into a private tracker. |
+| Technical operator | `README.md#quick-start` | Run the local command and generate the demo output. | Compare `outputs/demo/weekly_operating_review.md` with the sample. |
+| Hiring manager | `docs/sample_weekly_operating_review.md` | See how metrics, risks, asks, and next actions become cadence. | Review the memo for decision clarity. |
+
+## Use this instead of adjacent repos when
+
+| If the operating problem is... | Use this repo | Use the adjacent repo instead when... |
+| --- | --- | --- |
+| The founder needs one weekly packet across metrics, risks, asks, and next actions | Yes | Use source modules first if the underlying workflow is not yet structured. |
+| Revenue, onboarding, retention, product, hiring, or AI signals need one cadence | Yes | Use the relevant source repo when the problem is diagnosing that function. |
+| Investor or board narrative is the primary output | Not first | Use `board-pack-investor-update-agent` when the operating packet needs investor-ready narrative. |
+
+## Non-technical starting point
+
+If you are a founder and want the no-code version first, start with the matching kit in:
+[Founder OS Adoption Kit](https://github.com/shubham1502-hue/founder-os-adoption-kit)
+
+This repo is the deeper module. The adoption kit gives you the simple template, sample input, founder prompt, and sample output.
+
+Start with the [Weekly Review Kit](https://github.com/shubham1502-hue/founder-os-adoption-kit/tree/main/starter-kits/weekly-review-kit).
+
 ## The founder problem
 
 Weekly reviews become slow when metrics, risks, product issues, GTM movement, and team asks are assembled manually. Founders need one operating packet that shows what changed, what matters, and what decisions need attention.
@@ -50,7 +76,7 @@ After:
 
 - Run `python -m pip install -e .`.
 - Run `PYTHONPATH=src python3 -m founder_weekly_review --metrics examples/weekly_metrics.csv --context examples/company_context.md --out outputs/demo`.
-- Open `outputs/demo/weekly_operating_review.md` first.
+- Open `docs/sample_weekly_operating_review.md` first to inspect the committed demo. After running the command, open `outputs/demo/weekly_operating_review.md` locally.
 
 ## How to fork and use this for your company
 
@@ -66,7 +92,7 @@ After:
 - Replace one CSV: `examples/weekly_metrics.csv`.
 - Edit one context file: `examples/company_context.md`.
 - Run one command.
-- Read one output first: `outputs/demo/weekly_operating_review.md`.
+- Read one committed demo first: `docs/sample_weekly_operating_review.md`.
 
 ## Input format
 
@@ -77,7 +103,8 @@ The default sample data and examples are synthetic, anonymized, or template-only
 
 ## Output files
 
-- `outputs/demo/weekly_operating_review.md`: founder weekly review memo generated from the CLI
+- `docs/sample_weekly_operating_review.md`: committed sample weekly review for quick inspection
+- `outputs/demo/weekly_operating_review.md`: founder weekly review memo generated locally from the CLI
 
 ## Example founder workflow
 
@@ -255,7 +282,7 @@ python3 -m founder_weekly_review \
   --config examples/thresholds.json
 ```
 
-Then open:
+Then open the local generated outputs:
 
 - `outputs/demo/weekly_operating_review.md`
 - `outputs/demo/investor_safe_update.md`
