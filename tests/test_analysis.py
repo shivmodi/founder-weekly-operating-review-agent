@@ -7,9 +7,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from founder_weekly_review.analysis import analyze
-from founder_weekly_review.metrics import load_metrics
-from founder_weekly_review.reporting import write_outputs
+from founder_weekly_review.analysis import analyze  # noqa: E402
+from founder_weekly_review.metrics import load_metrics  # noqa: E402
+from founder_weekly_review.reporting import write_outputs  # noqa: E402
 
 
 class WeeklyReviewTests(unittest.TestCase):
@@ -65,14 +65,12 @@ class WeeklyReviewTests(unittest.TestCase):
             self.assertIn("retention", risk_areas)
         else:
             self.assertNotIn("retention", risk_areas)
-
-        if (
-            thresholds["activation_drop"]
-            < metrics[-1].activation_rate - metrics[-2].activation_rate
-        ):
+        activation_delta = metrics[-1].activation_rate - metrics[-2].activation_rate
+        if activation_delta < -thresholds["activation_drop"]:
             self.assertIn("activation", risk_areas)
         else:
             self.assertNotIn("activation", risk_areas)
+
 
         if thresholds["support_growth"] < (
             metrics[-1].support_tickets_open - metrics[-2].support_tickets_open
@@ -85,6 +83,38 @@ class WeeklyReviewTests(unittest.TestCase):
             self.assertIn("customer sentiment", risk_areas)
         else:
             self.assertNotIn("customer sentiment", risk_areas)
+
+
+    def test_activation_threshold_triggers_and_not(self):
+        from founder_weekly_review.metrics import WeeklyMetrics
+
+        base = dict(
+            mrr=50000.0,
+            new_mrr=5000.0,
+            expansion_mrr=1000.0,
+            churn_mrr=0.0,
+            active_customers=100,
+            new_customers=10,
+            churned_customers=0,
+            pipeline_value=200000.0,
+            cash_balance=500000.0,
+            burn=50000.0,
+            runway_months=12.0,
+            support_tickets_open=50,
+            nps=50.0,
+            product_issues_open=5,
+        )
+        previous = WeeklyMetrics(week="2026-W01", activation_rate=0.60, **base)
+
+        # Drop of 0.10 exceeds threshold of 0.05 → activation risk triggered
+        latest_big_drop = WeeklyMetrics(week="2026-W02", activation_rate=0.50, **base)
+        result = analyze([previous, latest_big_drop], thresholds={"activation_drop": 0.05})
+        self.assertIn("activation", [r["area"] for r in result["risks"]])
+
+        # Drop of 0.02 stays within threshold of 0.05 → activation risk not triggered
+        latest_small_drop = WeeklyMetrics(week="2026-W02", activation_rate=0.58, **base)
+        result2 = analyze([previous, latest_small_drop], thresholds={"activation_drop": 0.05})
+        self.assertNotIn("activation", [r["area"] for r in result2["risks"]])
 
 
 if __name__ == "__main__":

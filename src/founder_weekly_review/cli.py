@@ -46,6 +46,5 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-# Temporary
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
